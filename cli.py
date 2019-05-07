@@ -2,6 +2,7 @@ import os
 import base64
 import requests
 import argparse
+from functools import partial
 
 __base_url__ = 'http://127.0.0.1:5000'
 __unset__ = '__unset_value'
@@ -36,19 +37,23 @@ def delete(url):
     return response.json()
 
 
-def get_item_id(target):
+def get_id(url, target):
     if target > 0:
         return target
 
     max_id = -1
-    for item in get('/api/items'):
-        if item['id'] > max_id:
-            max_id = item['id']
+    for obj in get(url):
+        if obj['id'] > max_id:
+            max_id = obj['id']
 
     result = max_id + 1 + target
     if result <= 0:
-        raise ValueError("Invalid item ID")
+        raise ValueError("Invalid ID")
     return result
+
+
+get_item_id = partial(get_id, '/api/items')
+get_task_id = partial(get_id, '/api/tasks')
 
 
 def get_item_params(name, description, weight, image_id):
@@ -61,6 +66,22 @@ def get_item_params(name, description, weight, image_id):
         params['weight'] = None if weight == __unset__ else weight
     if image_id:
         params['image_id'] = None if image_id == __unset__ else image_id
+    return params
+
+
+def get_task_params(progress_pct, message, succeeded, failed):
+    params = {}
+    if progress_pct is not None:
+        params['progress_pct'] = None if progress_pct == __unset__ else progress_pct
+    if message is not None:
+        params['message'] = None if message == __unset__ else message
+    if succeeded:
+        assert not failed
+        params['finished'] = True
+        params['successful'] = True
+    elif failed:
+        params['finished'] = True
+        params['successful'] = False
     return params
 
 
@@ -132,6 +153,25 @@ def delete_image(args):
     print(response)
 
 
+def create_task(args):
+    item_id = get_item_id(args.item_id)
+    response = post('/api/tasks', item_id=item_id, message=args.message)
+    print(response)
+
+
+def update_task(args):
+    task_id = get_task_id(args.task_id)
+    params = get_task_params(args.progress_pct, args.message, args.succeeded, args.failed)
+    response = post('/api/tasks/%d' % task_id, **params)
+    print(response)
+
+
+def delete_task(args):
+    task_id = get_task_id(args.task_id)
+    response = delete('/api/tasks/%d' % task_id)
+    print(response)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title='commands', dest='command')
@@ -170,6 +210,23 @@ if __name__ == '__main__':
     parser_delete_image = subparsers.add_parser('delete-image')
     parser_delete_image.add_argument('image_id', type=int)
     parser_delete_image.set_defaults(func=delete_image)
+
+    parser_create_task = subparsers.add_parser('create-task')
+    parser_create_task.add_argument('item_id', type=int)
+    parser_create_task.add_argument('--message', '-m')
+    parser_create_task.set_defaults(func=create_task)
+
+    parser_update_task = subparsers.add_parser('update-task')
+    parser_update_task.add_argument('task_id', type=int)
+    parser_update_task.add_argument('--progress-pct', '-p', type=argtype_float)
+    parser_update_task.add_argument('--message', '-m', type=argtype_string)
+    parser_update_task.add_argument('--succeeded', '-s', action='store_true')
+    parser_update_task.add_argument('--failed', '-f', action='store_true')
+    parser_update_task.set_defaults(func=update_task)
+
+    parser_delete_task = subparsers.add_parser('delete-task')
+    parser_delete_task.add_argument('task_id', type=int)
+    parser_delete_task.set_defaults(func=delete_task)
 
     args = parser.parse_args()
     args.func(args)
