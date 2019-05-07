@@ -5,7 +5,7 @@ import os
 
 from flask import Flask, render_template
 from flask_restful import Api
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, models_committed
 from flask_socketio import SocketIO
 
 # Create app and initialize base config
@@ -30,3 +30,12 @@ from . import views
 @app.route('/')
 def index():
     return render_template('index.html')
+
+# Register a signal handler that will issue socketio events when database changes occur
+def on_models_committed(app_, changes):
+    for obj, operation in changes:
+        payload = obj.id if operation == 'delete' else obj.serialize()
+        event = '%s %s' % (obj.__tablename__, operation)
+        socketio.emit(event, payload)
+
+models_committed.connect(on_models_committed, app)

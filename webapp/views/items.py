@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
 
-from .. import db, rest, socketio
+from .. import db, rest
 from ..models import Item
 from ..util import listing, success, failure, status_204
 
@@ -26,7 +26,6 @@ class ItemsRoot(Resource):
         item = Item.new(args.name, args.description, args.weight, args.image_id)
         db.session.add(item)
         db.session.commit()
-        socketio.emit('item_created', item.serialize())
         return success(item, 201)
 
 
@@ -76,7 +75,6 @@ class ItemById(Resource):
 
         db.session.add(item)
         db.session.commit()
-        socketio.emit('item_changed', item.serialize())
         return success(item)
 
     def delete(self, item_id):
@@ -86,5 +84,4 @@ class ItemById(Resource):
 
         db.session.delete(item)
         db.session.commit()
-        socketio.emit('item_deleted', item_id)
         return status_204()

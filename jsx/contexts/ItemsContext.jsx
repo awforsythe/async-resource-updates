@@ -16,15 +16,15 @@ class ItemsProvider extends React.Component {
 
   componentDidMount() {
     this.fetchItems();
-    this.socket.on('item_created', this.onItemUpdate);
-    this.socket.on('item_changed', this.onItemUpdate);
-    this.socket.on('item_deleted', this.onItemDeleted);
+    this.socket.on('item insert', this.onItemUpdate);
+    this.socket.on('item update', this.onItemUpdate);
+    this.socket.on('item delete', this.onItemDeleted);
   }
 
   componentWillUnmount() {
-    this.socket.off('item_created', this.onItemUpdate);
-    this.socket.off('item_changed', this.onItemUpdate);
-    this.socket.off('item_deleted', this.onItemDeleted);
+    this.socket.off('item insert', this.onItemUpdate);
+    this.socket.off('item update', this.onItemUpdate);
+    this.socket.off('item delete', this.onItemDeleted);
   }
 
   fetchItems() {

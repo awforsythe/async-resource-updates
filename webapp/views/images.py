@@ -6,7 +6,7 @@ from flask import request, send_file
 from flask_restful import Resource, reqparse
 from werkzeug.datastructures import FileStorage
 
-from .. import db, rest, socketio
+from .. import db, rest
 from ..models import Image, Item
 from ..util import listing, success, failure, status_204
 
@@ -58,13 +58,8 @@ class ImageById(Resource):
             return failure("Image %d not found" % image_id)
 
         db.session.delete(image)
-        items = Item.query.filter_by(image_id=image.id).all()
-        for item in items:
+        for item in Item.query.filter_by(image_id=image.id).all():
             item.image_id = None
             db.session.add(item)
-
         db.session.commit()
-        for item in items:
-            socketio.emit('item_changed', item.serialize())
-
         return status_204()
