@@ -21,6 +21,7 @@ function ItemsList(props) {
           name={item.name}
           description={item.description}
           weight={item.weight}
+          imageId={item.image_id}
         />
       ))}
     </React.Fragment>
