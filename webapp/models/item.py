@@ -23,6 +23,6 @@ class Item(db.Model):
         }
 
     @classmethod
-    def new(cls, name, description=None, weight=None):
+    def new(cls, name, description=None, weight=None, image_id=None):
         now = datetime.datetime.utcnow()
-        return cls(created_time=now, name=name, description=description, weight=weight)
+        return cls(created_time=now, name=name, description=description, weight=weight, image_id=image_id)

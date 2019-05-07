@@ -12,6 +12,7 @@ class ItemsRoot(Resource):
     POST_ARGS.add_argument('name', required=True)
     POST_ARGS.add_argument('description')
     POST_ARGS.add_argument('weight', type=float)
+    POST_ARGS.add_argument('image_id', type=int)
 
     def get(self):
         items = Item.query.order_by(Item.created_time.desc()).all()
@@ -22,7 +23,7 @@ class ItemsRoot(Resource):
         if Item.query.filter_by(name=args.name).first():
             return failure("Item '%s' already exists" % args.name, 409)
 
-        item = Item.new(args.name, args.description, args.weight)
+        item = Item.new(args.name, args.description, args.weight, args.image_id)
         db.session.add(item)
         db.session.commit()
         socketio.emit('item_created', item.serialize())
