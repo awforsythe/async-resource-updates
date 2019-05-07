@@ -113,7 +113,9 @@ def update_item(args):
 
 
 def delete_item(args):
-    raise NotImplementedError
+    item_id = get_item_id(args.item_id)
+    response = delete('/api/items/%d' % item_id)
+    print(response)
 
 
 def create_image(args):

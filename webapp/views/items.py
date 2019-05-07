@@ -2,7 +2,7 @@ from flask_restful import Resource, reqparse
 
 from .. import db, rest, socketio
 from ..models import Item
-from ..util import listing, success, failure
+from ..util import listing, success, failure, status_204
 
 
 @rest.resource('/api/items')
@@ -78,3 +78,13 @@ class ItemById(Resource):
         db.session.commit()
         socketio.emit('item_changed', item.serialize())
         return success(item)
+
+    def delete(self, item_id):
+        item = Item.query.get(item_id)
+        if not item:
+            return failure("Item %d not found" % item_id)
+
+        db.session.delete(item)
+        db.session.commit()
+        socketio.emit('item_deleted', item_id)
+        return status_204()

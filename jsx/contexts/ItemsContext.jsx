@@ -18,11 +18,13 @@ class ItemsProvider extends React.Component {
     this.fetchItems();
     this.socket.on('item_created', this.onItemUpdate);
     this.socket.on('item_changed', this.onItemUpdate);
+    this.socket.on('item_deleted', this.onItemDeleted);
   }
 
   componentWillUnmount() {
     this.socket.off('item_created', this.onItemUpdate);
     this.socket.off('item_changed', this.onItemUpdate);
+    this.socket.off('item_deleted', this.onItemDeleted);
   }
 
   fetchItems() {
@@ -45,6 +47,16 @@ class ItemsProvider extends React.Component {
       });
     }
   };
+
+  onItemDeleted = (itemId) => {
+    const { items } = this.state;
+    const index = items.findIndex(x => x.id === itemId);
+    if (index >= 0) {
+      this.setState({
+        items: items.slice(0, index).concat(items.slice(index + 1)),
+      });
+    }
+  }
 
   render() {
     const { children } = this.props;
