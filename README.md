@@ -19,3 +19,9 @@ This setup is meant to serve as a barebones testbed for improving the finer poin
 - Install Python3 and Pipenv
 - `pipenv install` to create a virtualenv and install dependencies
 - `pipenv run webapp` to run the Flask server
+
+### Populating the database
+
+- `pipenv run request -n "Item name" -d "Description of item" -w 8.67` to create a new item (description and weight are optional)
+- `pipenv run request -t -1 -n "New item name"`  to edit the last created item (any combination of name, description, and weight)
+- `pipenv run request -t 4 -w 0.33` to modify an item by ID
