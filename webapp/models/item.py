@@ -10,6 +10,7 @@ class Item(db.Model):
     name = db.Column(db.Text, unique=True, nullable=False)
     description = db.Column(db.Text)
     weight = db.Column(db.Float)
+    image_id = db.Column(db.Integer, db.ForeignKey('image.id'))
 
     def serialize(self):
         return {
@@ -18,6 +19,7 @@ class Item(db.Model):
             'name': self.name,
             'description': self.description,
             'weight': self.weight,
+            'image_id': self.image_id,
         }
 
     @classmethod

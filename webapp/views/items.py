@@ -36,6 +36,7 @@ class ItemById(Resource):
     POST_ARGS.add_argument('name')
     POST_ARGS.add_argument('description')
     POST_ARGS.add_argument('weight', type=float)
+    POST_ARGS.add_argument('image_id', type=int)
 
     def get(self, item_id):
         item = Item.query.get(item_id)
@@ -63,6 +64,10 @@ class ItemById(Resource):
 
         if args.weight is not None and args.weight != item.weight:
             item.weight = args.weight
+            changed = True
+
+        if args.image_id is not None and args.image_id != item.image_id:
+            item.image_id = args.image_id
             changed = True
 
         if not changed:
