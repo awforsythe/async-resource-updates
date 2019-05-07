@@ -11,3 +11,7 @@ def success(obj, status_code=200):
 
 def failure(message, status_code=404):
     return make_response(jsonify({'message': message}), status_code)
+
+
+def status_204():
+    return make_response('', 204)

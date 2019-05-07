@@ -7,8 +7,8 @@ from flask_restful import Resource, reqparse
 from werkzeug.datastructures import FileStorage
 
 from .. import db, rest, socketio
-from ..models import Image
-from ..util import listing, success, failure
+from ..models import Image, Item
+from ..util import listing, success, failure, status_204
 
 
 @rest.resource('/api/images')
@@ -51,3 +51,20 @@ class ImageById(Resource):
         buf.write(base64.b64decode(image.png_data_base64))
         buf.seek(0)
         return send_file(buf, mimetype='image/png')
+
+    def delete(self, image_id):
+        image = Image.query.get(image_id)
+        if not image:
+            return failure("Image %d not found" % image_id)
+
+        db.session.delete(image)
+        items = Item.query.filter_by(image_id=image.id).all()
+        for item in items:
+            item.image_id = None
+            db.session.add(item)
+
+        db.session.commit()
+        for item in items:
+            socketio.emit('item_changed', item.serialize())
+
+        return status_204()
