@@ -1,20 +1,8 @@
-from flask import make_response, jsonify
 from flask_restful import Resource, reqparse
 
-from . import db, rest, socketio
-from .models import Item
-
-
-def listing(objs, status_code=200):
-    return make_response(jsonify([obj.serialize() for obj in objs]), status_code)
-
-
-def success(obj, status_code=200):
-    return make_response(jsonify(obj.serialize()), status_code)
-
-
-def failure(message, status_code=404):
-    return make_response(jsonify({'message': message}), status_code)
+from .. import db, rest, socketio
+from ..models import Item
+from ..util import listing, success, failure
 
 
 @rest.resource('/api/items')
@@ -65,7 +53,7 @@ class ItemById(Resource):
 
         if args.name and args.name != item.name:
             if Item.query.filter_by(name=args.name).first():
-                return make_response("Name '%s' is already taken" % args.name, 409)
+                return failure("Name '%s' is already taken" % args.name, 409)
             item.name = args.name
             changed = True
 
