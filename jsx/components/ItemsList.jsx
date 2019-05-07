@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
+import { ItemsContext } from '../contexts/ItemsContext.jsx';
+
 import Item from './Item.jsx';
 
 function ItemsList(props) {
@@ -30,4 +32,14 @@ ItemsList.propTypes = {
   items: PropTypes.array,
 };
 
-export default ItemsList;
+export default () => (
+  <ItemsContext.Consumer>
+    {context => (
+      <ItemsList
+        isLoading={context.isLoading}
+        error={context.error}
+        items={context.items}
+      />
+    )}
+  </ItemsContext.Consumer>
+);

@@ -3,8 +3,8 @@ import ReactDOM from 'react-dom';
 
 import Container from 'react-bootstrap/Container';
 
-import { ItemsContext, ItemsProvider } from './contexts/ItemsContext.jsx';
-import ItemsView from './components/ItemsView.jsx';
+import { ItemsProvider } from './contexts/ItemsContext.jsx';
+import ItemsList from './components/ItemsList.jsx';
 
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
@@ -12,7 +12,7 @@ function App(props) {
   return (
     <ItemsProvider>
       <Container>
-        <ItemsView />
+        <ItemsList />
       </Container>
     </ItemsProvider>
   );
