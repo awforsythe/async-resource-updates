@@ -13,14 +13,19 @@ function Item(props) {
     <Card bg="light" style={{marginTop: 16}}>
       <Card.Body>
         <Card.Title>{name}</Card.Title>
-        {!description ? null : <Card.Subtitle>{description}</Card.Subtitle>}
-        {!weight ? null : (
-          <Card.Text>
-            <b>Weight:</b> {weight} kg
-          </Card.Text>
-        )}
-        {!imageId ? null : <Image id={imageId} />}
-        <TasksList itemId={id} />
+        <div style={{display: 'flex'}}>
+          <div>
+            {!imageId ? null : <Image id={imageId} />}
+          </div>
+          <div style={{flex: 1}}>
+            <ul>
+              <li><b>Description:</b> {description}</li>
+              <li><b>Weight:</b> {weight} kg</li>
+              <li><b>ID:</b> {id}</li>
+            </ul>
+          </div>
+        </div>
+        <TasksList itemId={id} style={{float: 'left'}} />
       </Card.Body>
     </Card>
   );
