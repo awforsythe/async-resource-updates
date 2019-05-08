@@ -7,10 +7,11 @@ import ProgressBar from './ProgressBar.jsx';
 
 function TaskHeadline(props) {
   const { id, progressPct, message } = props;
+  const progress = Math.round((progressPct || 0) * 100.0);
   if (!message) {
-    return <h6>Task {id} &ndash; {(progressPct || 0) * 100.0}%</h6>;
+    return <h6>Task {id} &ndash; {progress}%</h6>;
   }
-  return <h6>Task {id} &ndash; {(progressPct || 0) * 100.0}% &ndash; <em>{message}</em></h6>;
+  return <h6>Task {id} &ndash; {progress}% &ndash; <em>{message}</em></h6>;
 }
 TaskHeadline.propTypes = {
   id: PropTypes.number.isRequired,
