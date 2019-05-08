@@ -28,6 +28,8 @@ from . import views
 
 # Define root route for frontend
 @app.route('/')
+@app.route('/items')
+@app.route('/events')
 def index():
     return render_template('index.html')
 
