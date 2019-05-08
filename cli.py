@@ -1,4 +1,6 @@
 import os
+import time
+import random
 import base64
 import requests
 import argparse
@@ -37,7 +39,14 @@ def delete(url):
     return response.json()
 
 
+def get_random_id(url):
+    return random.choice([obj['id'] for obj in get(url)])
+
+
 def get_id(url, target):
+    if target is None:
+        return get_random_id(url)
+
     if target > 0:
         return target
 
@@ -69,7 +78,7 @@ def get_item_params(name, description, weight, image_id):
     return params
 
 
-def get_task_params(progress_pct, message, succeeded, failed):
+def get_task_params(progress_pct, message, succeeded=None, failed=None):
     params = {}
     if progress_pct is not None:
         params['progress_pct'] = None if progress_pct == __unset__ else progress_pct
@@ -83,6 +92,49 @@ def get_task_params(progress_pct, message, succeeded, failed):
         params['finished'] = True
         params['successful'] = False
     return params
+
+
+def get_random_message():
+    return random.choice([
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
+        'Aenean eu purus id leo euismod sodales quis tincidunt risus.',
+        'Nullam a mi vel magna condimentum eleifend.',
+        'Curabitur mattis eros sit amet mi venenatis, id vehicula ipsum commodo.',
+        'Donec eget leo consequat, viverra elit auctor, sollicitudin orci.',
+        'Vivamus eu turpis lobortis tortor lobortis ultricies.',
+        'Sed bibendum lectus et purus suscipit laoreet.',
+        'Nam tincidunt sem vel cursus molestie.',
+        'Nam molestie magna at dolor eleifend, pulvinar aliquet augue vestibulum.',
+        'Donec tempus mi et eros dignissim porttitor.',
+        'Suspendisse laoreet leo luctus lorem finibus, vel tincidunt augue congue.',
+        'Vestibulum fringilla ex et tellus semper venenatis.',
+        'Nulla posuere purus in porta tincidunt.',
+        'In vel tellus fermentum, dictum arcu quis, lobortis purus.',
+        'Mauris volutpat purus quis justo mollis, non gravida neque convallis.',
+        'Cras pretium ipsum in lacus vestibulum auctor.',
+        'Mauris aliquet purus eget lorem gravida condimentum.',
+        'Etiam auctor nulla vitae tellus convallis elementum.',
+        'Maecenas a mi at ante aliquam pulvinar at ac justo.',
+        'Duis convallis nunc ut leo ornare viverra.',
+        'Vestibulum malesuada ipsum lacinia nibh dignissim commodo in ut purus.',
+        'Praesent placerat metus quis risus blandit convallis.',
+        'Morbi a metus ultricies, convallis dolor nec, porttitor orci.',
+        'Aenean vestibulum augue non purus dictum, quis efficitur eros maximus.',
+        'Aliquam tempor augue at egestas ultricies.',
+        'Cras vitae velit pretium, pellentesque orci ac, egestas diam.',
+        'Praesent non leo vehicula, blandit justo ac, hendrerit justo.',
+        'Praesent sed nunc sit amet enim maximus tempor.',
+        'Sed quis lectus vel felis laoreet facilisis.',
+        'Maecenas eu erat eget neque rutrum tincidunt.',
+        'Etiam vitae nisl vel sem feugiat ullamcorper.',
+        'Integer id purus pharetra, vestibulum turpis nec, rhoncus lorem.',
+        'Aenean tristique mauris quis molestie tincidunt.',
+        'Ut molestie tortor at nunc hendrerit, eu laoreet nibh fringilla.',
+        'Fusce vel nunc et lacus porta egestas.',
+        'Vivamus bibendum nulla nec lorem dapibus scelerisque.',
+        'Integer vehicula diam dignissim mattis consequat.',
+        'Integer ut sapien luctus, accumsan purus vel, hendrerit ipsum.',
+    ])
 
 
 def argtype_string(x):
@@ -172,6 +224,38 @@ def delete_task(args):
     print(response)
 
 
+def run_task(args):
+    # Create the task
+    item_id = get_item_id(args.item_id)
+    response = post('/api/tasks', item_id=item_id, message=args.message)
+    print(response)
+    task_id = response['id']
+
+    # Determine how long the task should take to run
+    if args.max_duration and args.max_duration > args.duration:
+        duration = random.uniform(args.duration, args.max_duration)
+    else:
+        duration = args.duration
+
+    # Update the task periodically
+    elapsed = 0.0
+    while elapsed < duration:
+        message = get_random_message() if not args.message else None
+        params = get_task_params(elapsed / duration, message)
+        response = post('/api/tasks/%d' % task_id, **params)
+        print(response)
+        time.sleep(args.update_interval)
+        elapsed += args.update_interval
+
+    # When finished, complete the task
+    if random.random() <= args.success_chance:
+        params = get_task_params(1.0, None, succeeded=True)
+    else:
+        params = get_task_params(1.0, None, failed=True)
+    response = post('/api/tasks/%d' % task_id, **params)
+    print(response)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title='commands', dest='command')
@@ -227,6 +311,15 @@ if __name__ == '__main__':
     parser_delete_task = subparsers.add_parser('delete-task')
     parser_delete_task.add_argument('task_id', type=int)
     parser_delete_task.set_defaults(func=delete_task)
+
+    parser_run_task = subparsers.add_parser('run-task')
+    parser_run_task.add_argument('--item-id', '-i', type=int)
+    parser_run_task.add_argument('--success-chance', '-s', type=float, default=1.0)
+    parser_run_task.add_argument('--duration', '-d', type=float, default=2.0)
+    parser_run_task.add_argument('--max-duration', '-D', type=float)
+    parser_run_task.add_argument('--update-interval', '-u', type=float, default=0.2)
+    parser_run_task.add_argument('--message', '-m')
+    parser_run_task.set_defaults(func=run_task)
 
     args = parser.parse_args()
     args.func(args)
