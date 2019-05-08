@@ -23,6 +23,14 @@ for bool_key in ('DEBUG'):
     if str_value and str_value.lower() in ('true', 'false'):
         app.config[bool_key] = str_value.lower() == 'true'
 
+for int_key in ('PORT'):
+    str_value = os.getenv(int_key)
+    if str_value:
+        try:
+            app.config[int_key] = int(str_value)
+        except ValueError:
+            pass
+
 for str_key in ('SQLALCHEMY_DATABASE_URI', 'SECRET_KEY', 'DATABASE_URL'):
     str_value = os.getenv(str_key)
     if str_value:
