@@ -273,6 +273,14 @@ def create_event(args):
     print(response)
 
 
+def spam_events(args):
+    pattern = '%s %%d of %d' % (args.message or 'Test event', args.num)
+    for i in range(args.num):
+        params = {'message': pattern % (i + 1), 'severity': args.severity or 'info'}
+        response = post('/api/events', **params)
+        print(response)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title='commands', dest='command')
@@ -342,6 +350,12 @@ if __name__ == '__main__':
     parser_create_event.add_argument('message')
     parser_create_event.add_argument('--severity', '-s', choices=['debug', 'info', 'warning', 'error'])
     parser_create_event.set_defaults(func=create_event)
+
+    parser_spam_events = subparsers.add_parser('spam-events')
+    parser_spam_events.add_argument('--message', '-m')
+    parser_spam_events.add_argument('--severity', '-s', choices=['debug', 'info', 'warning', 'error'])
+    parser_spam_events.add_argument('--num', '-n', type=int, default=50)
+    parser_spam_events.set_defaults(func=spam_events)
 
     args = parser.parse_args()
     args.func(args)
