@@ -22,6 +22,8 @@ def get(url, **kwargs):
 
 def post(url, **kwargs):
     response = requests.post(__base_url__ + url, json=kwargs)
+    if response.status_code == 204:
+        return 'POST OK.'
     return response.json()
 
 
@@ -29,6 +31,8 @@ def post_file(url, filepath, name, mimetype):
     filename = os.path.basename(filepath)
     files = {name: (filename, open(filepath, 'rb'), mimetype)}
     response = requests.post(__base_url__ + url, files=files)
+    if response.status_code == 204:
+        return 'POST OK.'
     return response.json()
 
 
@@ -62,6 +66,7 @@ def get_id(url, target):
 
 
 get_item_id = partial(get_id, '/api/items')
+get_image_id = partial(get_id, '/api/images')
 get_task_id = partial(get_id, '/api/tasks')
 
 
@@ -196,8 +201,10 @@ def create_image(args):
     print(response)
 
 
-def update_image(args):
-    raise NotImplementedError
+def replace_image(args):
+    image_id = get_image_id(args.image_id)
+    response = post_file('/api/images/%d' % image_id, args.filename, 'image', 'image/png')
+    print(response)
 
 
 def delete_image(args):
@@ -286,10 +293,10 @@ if __name__ == '__main__':
     parser_create_image.add_argument('filename')
     parser_create_image.set_defaults(func=create_image)
 
-    parser_update_image = subparsers.add_parser('update-image')
-    parser_update_image.add_argument('image_id', type=int)
-    parser_update_image.add_argument('filename')
-    parser_update_image.set_defaults(func=update_image)
+    parser_replace_image = subparsers.add_parser('replace-image')
+    parser_replace_image.add_argument('image_id', type=int)
+    parser_replace_image.add_argument('filename')
+    parser_replace_image.set_defaults(func=replace_image)
 
     parser_delete_image = subparsers.add_parser('delete-image')
     parser_delete_image.add_argument('image_id', type=int)
