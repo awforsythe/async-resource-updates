@@ -18,12 +18,12 @@ if os.path.isfile(instance_config_path):
     app.config.from_pyfile(instance_config_path)
 
 # Merge in config from select environment variables
-for bool_key in ('DEBUG'):
+for bool_key in ('DEBUG',):
     str_value = os.getenv(bool_key)
     if str_value and str_value.lower() in ('true', 'false'):
         app.config[bool_key] = str_value.lower() == 'true'
 
-for int_key in ('PORT'):
+for int_key in ('PORT',):
     str_value = os.getenv(int_key)
     if str_value:
         try:
