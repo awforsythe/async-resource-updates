@@ -265,6 +265,14 @@ def run_task(args):
     print(response)
 
 
+def create_event(args):
+    params = {'message': args.message}
+    if args.severity:
+        params['severity'] = args.severity
+    response = post('/api/events', **params)
+    print(response)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(title='commands', dest='command')
@@ -329,6 +337,11 @@ if __name__ == '__main__':
     parser_run_task.add_argument('--update-interval', '-u', type=float, default=0.2)
     parser_run_task.add_argument('--message', '-m')
     parser_run_task.set_defaults(func=run_task)
+
+    parser_create_event = subparsers.add_parser('create-event')
+    parser_create_event.add_argument('message')
+    parser_create_event.add_argument('--severity', '-s', choices=['debug', 'info', 'warning', 'error'])
+    parser_create_event.set_defaults(func=create_event)
 
     args = parser.parse_args()
     args.func(args)

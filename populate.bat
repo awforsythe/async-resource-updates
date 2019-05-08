@@ -12,7 +12,14 @@ pipenv run cli run-task -i 3 -m "This task is successful" -d 0.05 -u 0.02
 pipenv run cli run-task -i 3 -m "This task has failed" -d 0.05 -u 0.02 -s 0.0
 pipenv run cli run-task -i 5 -m "This task belongs to an item that will be deleted" -d 0.2
 pipenv run cli delete-item 5
-pipenv run cli run-task
+pipenv run cli run-task -i 4
 pipenv run cli replace-image 2 instance/test3.png
-pipenv run cli run-task
+pipenv run cli run-task -i 4
 pipenv run cli update-item 2 -i instance/test2.png
+pipenv run cli create-event "This is a test event"
+pipenv run cli create-event "This is a test event with explicit info severity" -s info
+pipenv run cli create-event "This is a test event with debug severity" -s debug
+pipenv run cli create-event "Warning! This is still just a test" -s warning
+pipenv run cli create-event "Oh no, an error. But it's a test" -s error
+pipenv run cli create-event "This is another test event"
+pipenv run cli create-event "This is yet another test event"
