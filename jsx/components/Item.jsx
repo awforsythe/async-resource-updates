@@ -5,9 +5,10 @@ import Row from 'react-bootstrap/Row';
 import Card from 'react-bootstrap/Card';
 
 import Image from './Image.jsx';
+import TasksList from './TasksList.jsx';
 
 function Item(props) {
-  const { name, description, weight, imageId } = props;
+  const { id, name, description, weight, imageId } = props;
   return (
     <Card bg="light" style={{marginTop: 16}}>
       <Card.Body>
@@ -19,11 +20,13 @@ function Item(props) {
           </Card.Text>
         )}
         {!imageId ? null : <Image id={imageId} />}
+        <TasksList itemId={id} />
       </Card.Body>
     </Card>
   );
 }
 Item.propTypes = {
+  id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   description: PropTypes.string,
   weight: PropTypes.number,
