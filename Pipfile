@@ -17,6 +17,7 @@ flask-socketio = "*"
 flask-restful = "*"
 requests = "*"
 blinker = "*"
+psycopg2 = "*"
 
 [requires]
 python_version = "3.6"
