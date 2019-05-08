@@ -22,6 +22,11 @@ This setup is meant to serve as a barebones testbed for improving the finer poin
 
 ### Populating the database
 
-- `pipenv run request -n "Item name" -d "Description of item" -w 8.67` to create a new item (description and weight are optional)
-- `pipenv run request -t -1 -n "New item name"`  to edit the last created item (any combination of name, description, and weight)
-- `pipenv run request -t 4 -w 0.33` to modify an item by ID
+- `pipenv run populate.bat` to run through some basic API requests
+- `pipenv run cli -h` to see what else can be done with the API
+
+## Notes
+
+- **SocketIO vs. WebSockets:** Is Flask-SocketIO using long-polling? Is there a way to ensure that it doesn't? Is Flask-SocketIO necessary at all, or is there a simpler approach that would enable us to just use WebSockets directly?
+
+- **Scale to production:** Test with postgres locally, then deploy to Heroku. Does everything hold up? Are there reliability issues with SocketIO updates? Alternatively, simulate latency locally.
