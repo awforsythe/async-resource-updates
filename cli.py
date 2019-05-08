@@ -163,7 +163,9 @@ def argtype_image(x):
         except ValueError:
             if x.lower() == 'unset':
                 return __unset__
-            return post_file('/api/images', x, 'image', 'image/png')['id']
+            response = post_file('/api/images', x, 'image', 'image/png')
+            print(response)
+            return response['id']
 
 
 def write_test_images(args):
