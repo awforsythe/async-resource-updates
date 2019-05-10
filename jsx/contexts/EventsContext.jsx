@@ -10,6 +10,10 @@ class EventsProvider extends React.Component {
       isLoading: true,
       error: null,
       events: [],
+      page: 0,
+      pageSize: 30,
+      numPages: 0,
+      total: 0,
     };
     this.socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
   }
@@ -24,23 +28,46 @@ class EventsProvider extends React.Component {
   }
 
   fetchEvents() {
-    fetch('/api/events')
+    const { page, pageSize } = this.state;
+    fetch(`/api/events?n=${pageSize}&p=${page + 1}`)
       .then(response => response.json())
-      .then(data => this.setState({ isLoading: false, error: null, events: data.items }))
-      .catch(error => this.setState({ isLoading: false, error }));
+      .then(data => this.setState({
+        isLoading: false,
+        error: null,
+        events: data.items,
+        page: data.page - 1,
+        pageSize: data.per_page,
+        numPages: data.pages,
+        total: data.total,
+      }))
+      .catch(error => this.setState({
+        isLoading: false,
+        error: error.toString()
+      }));
   }
 
   onEventCreated = (event) => {
-    const { events } = this.state;
-    this.setState({
-      events: [event].concat(events),
-    });
+    const { page, pageSize, events } = this.state;
+    if (page === 0) {
+      if (events.length === pageSize) {
+        this.setState({ events: [event].concat(events.slice(0, pageSize - 1)) });
+      } else {
+        this.setState({ events: [event].concat(events) });
+      }
+    }
+  };
+
+  onPageChanged = (newPage) => {
+    const { numPages } = this.state;
+    if (newPage >= 0 && newPage < numPages) {
+      this.setState({ page: newPage }, this.fetchEvents);
+    }
   };
 
   render() {
     const { children } = this.props;
     return (
-      <EventsContext.Provider value={{ ...this.state }}>
+      <EventsContext.Provider value={{ ...this.state, onPageChanged: this.onPageChanged }}>
         {children}
       </EventsContext.Provider>
     );

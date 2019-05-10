@@ -12,7 +12,7 @@ import { TasksProvider } from './contexts/TasksContext.jsx';
 import { EventsProvider } from './contexts/EventsContext.jsx';
 
 import ItemsList from './components/ItemsList.jsx';
-import EventsList from './components/EventsList.jsx';
+import EventsView from './components/EventsView.jsx';
 
 import '../node_modules/bootstrap/dist/css/bootstrap.min.css';
 
@@ -41,7 +41,7 @@ const ItemsPage = () => (
 const EventsPage = () => (
   <EventsProvider>
     <Container style={{marginTop: 16}}>
-      <EventsList />
+      <EventsView />
     </Container>
   </EventsProvider>
 );

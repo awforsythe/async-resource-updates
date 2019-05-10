@@ -36,12 +36,6 @@ ItemsList.propTypes = {
 
 export default () => (
   <ItemsContext.Consumer>
-    {context => (
-      <ItemsList
-        isLoading={context.isLoading}
-        error={context.error}
-        items={context.items}
-      />
-    )}
+    {context => <ItemsList {...context} />}
   </ItemsContext.Consumer>
 );

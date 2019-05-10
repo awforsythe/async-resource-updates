@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-import { EventsContext } from '../contexts/EventsContext.jsx';
-
 import Event from './Event.jsx';
 
 function EventsList(props) {
@@ -33,14 +31,4 @@ EventsList.propTypes = {
   events: PropTypes.array,
 };
 
-export default (props) => (
-  <EventsContext.Consumer>
-    {context => (
-      <EventsList
-        isLoading={context.isLoading}
-        error={context.error}
-        events={context.events}
-      />
-    )}
-  </EventsContext.Consumer>
-);
+export default EventsList;
