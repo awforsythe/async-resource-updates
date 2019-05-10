@@ -9,7 +9,6 @@ module.exports = {
     path: path.resolve(__dirname, 'webapp', 'static', 'dist'),
   },
   mode: process.env.NODE_ENV || 'development',
-  watch: (process.env.NODE_ENV || 'development') == 'development',
   module: {
     rules: [
       {

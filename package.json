@@ -5,7 +5,8 @@
   "main": "webpack.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel-node ./node_modules/webpack/bin/webpack"
+    "build": "babel-node ./node_modules/webpack/bin/webpack --watch",
+    "build-production": "babel-node ./node_modules/webpack/bin/webpack --mode=\"production\""
   },
   "author": "",
   "license": "ISC",
