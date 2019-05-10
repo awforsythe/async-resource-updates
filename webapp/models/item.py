@@ -12,6 +12,8 @@ class Item(db.Model):
     weight = db.Column(db.Float)
     image_id = db.Column(db.Integer, db.ForeignKey('image.id'))
 
+    tasks = db.relationship('Task', backref='item', lazy=True, cascade='save-update, merge, delete')
+
     def serialize(self):
         return {
             'id': self.id,
